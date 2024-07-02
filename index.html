@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moon</title>
+    <title>WebAR Example</title>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -11,35 +11,30 @@
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@webxr-polyfill/polyfill@latest"></script> <!-- WebXR Polyfill for better browser support -->
     <script>
         let scene, camera, renderer, cube;
 
         function init() {
-            // Create the scene
             scene = new THREE.Scene();
-            // Create a camera
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.z = 5;
 
-            // Create a WebGL renderer
-            renderer = new THREE.WebGLRenderer();
+            renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Create a red cube
             const geometry = new THREE.BoxGeometry();
             const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
             cube = new THREE.Mesh(geometry, material);
             scene.add(cube);
 
-            // Handle window resize
             window.addEventListener('resize', onWindowResize, false);
 
-            // Initialize WebXR for AR
             if (navigator.xr) {
                 navigator.xr.requestSession('immersive-ar').then(onSessionStarted);
             } else {
-                console.log('WebXR not supported');
+                console.error('WebXR not supported');
             }
         }
 
@@ -50,11 +45,8 @@
         }
 
         function onSessionStarted(session) {
-            // Bind the WebGLRenderer to the XRSession
             renderer.xr.enabled = true;
             renderer.xr.setSession(session);
-
-            // Start rendering loop
             session.updateRenderState({ baseLayer: new XRWebGLLayer(session, renderer.getContext()) });
             renderer.setAnimationLoop(animate);
         }
