@@ -6,24 +6,66 @@
     <title>WebAR Example</title>
     <style>
         body { margin: 0; }
-        #arjs-debug { display: none; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
-    <!-- A-Frame Library -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <!-- AR.js Library -->
-    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
-    
-    <a-scene embedded arjs>
-        <!-- Marker for AR -->
-        <a-marker preset="hiro">
-            <!-- Red Cube -->
-            <a-box position="1 1 1" color="#FF0000" depth="1" height="1" width="1"></a-box>
-        </a-marker>
-        
-        <!-- A-Frame Camera -->
-        <a-entity camera></a-entity>
-    </a-scene>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, cube;
+
+        function init() {
+            // Create the scene
+            scene = new THREE.Scene();
+            // Create a camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            // Create a WebGL renderer
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Create a red cube
+            const geometry = new THREE.BoxGeometry();
+            const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize, false);
+
+            // Initialize WebXR for AR
+            if (navigator.xr) {
+                navigator.xr.requestSession('immersive-ar').then(onSessionStarted);
+            } else {
+                console.log('WebXR not supported');
+            }
+        }
+
+        function onWindowResize() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        }
+
+        function onSessionStarted(session) {
+            // Bind the WebGLRenderer to the XRSession
+            renderer.xr.enabled = true;
+            renderer.xr.setSession(session);
+
+            // Start rendering loop
+            session.updateRenderState({ baseLayer: new XRWebGLLayer(session, renderer.getContext()) });
+            renderer.setAnimationLoop(animate);
+        }
+
+        function animate() {
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+
+        init();
+    </script>
 </body>
 </html>
