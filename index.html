@@ -98,59 +98,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js AR Cube</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js/three.js/build/ar-threex-location-only.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.123.0/examples/jsm/webxr/ARButton.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebXR AR Cube</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
 </head>
 <body>
-    <script>
-        // Scene setup
-        const scene = new THREE.Scene();
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@webxr/threejs@0.4.2/build/webxr-three.min.js"></script>
+  <script>
+    let camera, scene, renderer;
+    let cube;
+    let clock;
+    let deltaTime;
+    let speed = 1; // 속도 조절 (1f)
 
-        // Camera setup
-        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+    function init() {
+      // 씬 생성
+      scene = new THREE.Scene();
 
-        // Renderer setup
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.xr.enabled = true;
-        document.body.appendChild(renderer.domElement);
+      // 카메라 생성
+      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
+      scene.add(camera);
 
-        // AR Button
-        document.body.appendChild(ARButton.createButton(renderer));
+      // 라이트 추가
+      const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+      scene.add(light);
 
-        // Adding a simple cube
-        const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        cube.position.set(0, 0, -0.5);
-        scene.add(cube);
+      // 파란색 정육면체 생성
+      const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+      const material = new THREE.MeshStandardMaterial({ color: 0x0000ff });
+      cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
 
-        // Light setup
-        const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-        light.position.set(0.5, 1, 0.25);
-        scene.add(light);
+      // 렌더러 설정
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.xr.enabled = true;
+      document.body.appendChild(renderer.domElement);
 
-        // Render loop
-        function animate() {
-            renderer.setAnimationLoop(function () {
-                renderer.render(scene, camera);
-            });
-        }
+      // XR 세션 시작
+      navigator.xr.requestSession('immersive-ar', { requiredFeatures: ['local-floor'] }).then((session) => {
+        renderer.xr.setSession(session);
+      });
 
-        animate();
+      // 클럭 생성
+      clock = new THREE.Clock();
+    }
 
-        // Handling window resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+    function animate() {
+      // 렌더링 루프
+      renderer.setAnimationLoop(render);
+    }
 
-    </script>
+    function render() {
+      deltaTime = clock.getDelta();
+
+      // 정육면체 이동
+      cube.position.x += speed * deltaTime;
+      if (cube.position.x > 1) cube.position.x = -1; // 일정 범위에서 순환 이동
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', onWindowResize, false);
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    init();
+    animate();
+  </script>
 </body>
 </html>
-
