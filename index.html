@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8">
@@ -88,6 +88,48 @@
       enterVRButton.addEventListener('click', function (event) {
         unityInstance.Module.WebXR.toggleVR();
       }, false);
+    </script>
+  </body>
+</html>
+ -->
+
+
+
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>WebAR Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.123.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.123.0/examples/jsm/webxr/ARButton.js"></script>
+  </head>
+  <body>
+    <script>
+      // Scene setup
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.xr.enabled = true;
+      document.body.appendChild(renderer.domElement);
+
+      // AR Button
+      document.body.appendChild(ARButton.createButton(renderer));
+
+      // Adding a simple cube
+      const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const cube = new THREE.Mesh(geometry, material);
+      cube.position.set(0, 0, -0.5);
+      scene.add(cube);
+
+      // Render loop
+      function animate() {
+        renderer.setAnimationLoop(function () {
+          renderer.render(scene, camera);
+        });
+      }
+
+      animate();
     </script>
   </body>
 </html>
