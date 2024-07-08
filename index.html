@@ -2,7 +2,11 @@
 <html lang="en">
 
 <head>
+<<<<<<< HEAD
 	<title>Basic Scene</title>
+=======
+	<title>Basic Scene with WebXR</title>
+>>>>>>> 85cafa0d002d6e6bb7b4714156f9df4aa229f1c1
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link type="text/css" rel="stylesheet" href="style.css">
@@ -11,6 +15,13 @@
 
 <body>
 	<script type="module">
+<<<<<<< HEAD
+=======
+    // To start an AR scene with webXR, we can use a handy button provided by three.js
+    // We first have to import it because it is a javascript module
+    import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
+    
+>>>>>>> 85cafa0d002d6e6bb7b4714156f9df4aa229f1c1
 		let camera, scene, renderer;
     let mesh;
 
@@ -21,6 +32,7 @@
 			const container = document.createElement('div');
 			document.body.appendChild(container);
 
+<<<<<<< HEAD
 			// All three.js scenes need three things: a scene, a camera, and a renderer
 			// For more info read: https://threejs.org/docs/#manual/en/introduction/Creating-a-scene
 
@@ -51,20 +63,40 @@
       // skyColor - (optional) hexadecimal color of the sky. Default is 0xffffff.
       // groundColor - (optional) hexadecimal color of the ground. Default is 0xffffff.
       // intensity - (optional) numeric value of the light's strength/intensity. Default is 1.
+=======
+			scene = new THREE.Scene();
+
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
+
+			renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+      // This next line is important to to enable the renderer for WebXR
+			renderer.xr.enabled = true; // New!
+			container.appendChild(renderer.domElement);
+
+>>>>>>> 85cafa0d002d6e6bb7b4714156f9df4aa229f1c1
 			var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 			light.position.set(0.5, 1, 0.25);
 			scene.add(light);
 
+<<<<<<< HEAD
       // Add a polyhedron shape to the scene
       // Documentation: https://threejs.org/docs/#api/en/geometries/IcosahedronGeometry
       // IcosahedronGeometry(radius : Float, detail : Integer)
       // radius — Default is 1.
       // detail — Default is 0. Setting this to a value greater than 0 adds more vertices making it no longer an icosahedron. When detail is greater than 1, it's effectively a sphere.
+=======
+>>>>>>> 85cafa0d002d6e6bb7b4714156f9df4aa229f1c1
       const geometry = new THREE.IcosahedronGeometry(0.1, 1);
       const material = new THREE.MeshPhongMaterial({
         color      :  new THREE.Color("rgb(226,35,213)"),
         shininess  :  6,
+<<<<<<< HEAD
         shading    :  true,
+=======
+        flatShading:  true,
+>>>>>>> 85cafa0d002d6e6bb7b4714156f9df4aa229f1c1
         transparent: 1,
         opacity    : 0.8
       });
@@ -73,6 +105,12 @@
       mesh.position.set(0, 0, -0.5);
       scene.add(mesh);
 
+<<<<<<< HEAD
+=======
+			// Add the AR button to the body of the DOM
+			document.body.appendChild(ARButton.createButton(renderer));
+
+>>>>>>> 85cafa0d002d6e6bb7b4714156f9df4aa229f1c1
 			window.addEventListener('resize', onWindowResize, false);
 		}
 
@@ -83,6 +121,7 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 		}
 
+<<<<<<< HEAD
 		// this function is only called one time
 		function animate() {
 			// here we set the render function to be called in a loop
@@ -98,3 +137,17 @@
 </body>
 
 </html>
+=======
+		function animate() {
+			renderer.setAnimationLoop(render);
+		}
+
+		function render() {      
+			renderer.render(scene, camera);
+		}
+
+	</script>
+</body>
+
+</html>
+>>>>>>> 85cafa0d002d6e6bb7b4714156f9df4aa229f1c1
