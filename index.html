@@ -151,6 +151,9 @@
         productName: "WebARImageTracking",
         productVersion: "0.1.0",
         showBanner: unityShowBanner,
+        webglContextAttributes: {
+          preserveDrawingBuffer: true  // 이 속성을 추가하여 WebGL에서 그린 내용을 보존합니다.
+        },
       };
 
       // By default, Unity keeps WebGL canvas render target size matched with
