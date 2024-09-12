@@ -24,6 +24,68 @@
       </div>
     </div>
     <script>
+      // Comb GUID 생성 함수
+      function generateCombGuid() {
+          // 1. 랜덤한 GUID/UUID 생성
+          function generateRandomGuid() {
+              return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                  var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                  return v.toString(16);
+              });
+          }
+
+          // 2. 현재 타임스탬프(밀리초) 생성
+          function getTimestamp() {
+              return Date.now().toString(16); // 타임스탬프를 16진수로 변환
+          }
+
+          // 3. GUID의 마지막 부분에 타임스탬프를 포함하여 Comb GUID 생성
+          function combineGuidWithTimestamp(guid, timestamp) {
+              return guid.substring(0, guid.length - timestamp.length) + timestamp;
+          }
+
+          // GUID와 타임스탬프 생성
+          const guid = generateRandomGuid();
+          const timestamp = getTimestamp();
+
+          // Comb GUID 반환
+          return combineGuidWithTimestamp(guid, timestamp);
+      }
+
+      // 쿠키에서 combGuid를 찾는 함수
+      function getCookie(name) {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop().split(';').shift();
+          return null; // 쿠키가 없을 경우 null 반환
+      }
+
+      // 쿠키에 Comb GUID 저장하는 함수
+      function setCombGuidInCookie() {
+          const combGuid = generateCombGuid();
+          console.log("생성된 쿠키: ", combGuid);
+          const expires = new Date();
+          expires.setTime(expires.getTime() + (4 * 24 * 60 * 60 * 1000)); // 4일 동안 쿠키 유효
+
+          // 쿠키 설정
+          document.cookie = `combGuid=${combGuid}; expires=${expires.toUTCString()}; path=/;`;
+      }
+
+      // main logic: 쿠키에 combGuid가 있는지 확인
+      function checkAndSetCombGuid() {
+          const existingCombGuid = getCookie('combGuid');
+          
+          if (existingCombGuid) {
+              console.log("쿠키에 이미 combGuid가 존재합니다: ", existingCombGuid);
+          } else {
+              // combGuid가 없을 경우 새로 생성 후 쿠키에 저장
+              setCombGuidInCookie();
+              console.log("Comb GUID가 쿠키에 생성 및 저장되었습니다.");
+          }
+      }
+
+      // 실행: 쿠키에 combGuid가 있는지 확인하고 필요 시 생성
+      checkAndSetCombGuid();
 
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
@@ -116,6 +178,9 @@
             };
 
       document.body.appendChild(script);
+
+
+
 
     </script>
   </body>
